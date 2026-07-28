@@ -1,0 +1,22 @@
+{{!
+    @template block_aicourseassistant/chat
+}}
+<div class="block-aicourseassistant" data-blockinstanceid="{{blockinstanceid}}">
+    <div class="block-aicourseassistant-intro">
+        {{{intro}}}
+    </div>
+
+    <div class="block-aicourseassistant-messages" data-region="messages" aria-live="polite"></div>
+
+    <form class="block-aicourseassistant-form" data-region="form">
+        <label class="sr-only" for="block-aicourseassistant-input-{{blockinstanceid}}">{{placeholder}}</label>
+        <textarea id="block-aicourseassistant-input-{{blockinstanceid}}" data-region="input" rows="3" placeholder="{{placeholder}}"></textarea>
+        <div class="block-aicourseassistant-actions">
+            <button type="button" class="btn btn-secondary" data-action="clear">{{clearlabel}}</button>
+            <button type="submit" class="btn btn-primary" data-action="send">{{sendlabel}}</button>
+        </div>
+    </form>
+
+    <div class="block-aicourseassistant-privacy">{{privacylabel}}</div>
+    <div class="block-aicourseassistant-loading hidden" data-region="loading">{{loadinglabel}}</div>
+</div>

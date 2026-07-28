@@ -1,0 +1,56 @@
+.block-aicourseassistant {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+}
+
+.block-aicourseassistant-intro {
+    color: #3f4752;
+    font-size: .925rem;
+}
+
+.block-aicourseassistant-messages {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.block-aicourseassistant-message {
+    border-radius: 6px;
+    padding: .6rem .7rem;
+    line-height: 1.45;
+    word-break: break-word;
+}
+
+.block-aicourseassistant-message-user {
+    align-self: flex-end;
+    background: #e7f1ff;
+    color: #102a43;
+}
+
+.block-aicourseassistant-message-assistant {
+    align-self: stretch;
+    background: #f6f7f9;
+    border: 1px solid #dfe3e8;
+}
+
+.block-aicourseassistant-form textarea {
+    box-sizing: border-box;
+    width: 100%;
+    resize: vertical;
+}
+
+.block-aicourseassistant-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: .5rem;
+    margin-top: .5rem;
+}
+
+.block-aicourseassistant-privacy,
+.block-aicourseassistant-loading {
+    color: #59636f;
+    font-size: .8rem;
+}
