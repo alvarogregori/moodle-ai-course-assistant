@@ -1,4 +1,4 @@
-# AI Course Assistant
+# Moodle AI Course Assistant
 
 Moodle block plugin component: `block_aicourseassistant`.
 
