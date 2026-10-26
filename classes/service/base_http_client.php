@@ -20,13 +20,31 @@ abstract class base_http_client {
 
         $info = $curl->get_info();
         $status = (int)($info['http_code'] ?? 0);
-        $decoded = json_decode($response, true);
+        $decoded = json_decode((string)$response, true);
 
         if ($status < 200 || $status >= 300 || !is_array($decoded)) {
-            throw new \moodle_exception('llmrequestfailed', 'block_aicourseassistant', '', $status ?: 'unknown');
+            throw new \moodle_exception('llmrequestfailed', 'block_aicourseassistant', '', $status ?: 'unknown',
+                $this->error_detail($decoded, (string)$response, (string)($curl->error ?? '')));
         }
 
         return $decoded;
+    }
+
+    /**
+     * Extract the provider's own error explanation (kept as debuginfo, shown to site administrators only).
+     */
+    private function error_detail($decoded, string $raw, string $curlerror): string {
+        if (is_array($decoded)) {
+            // OpenAI and Anthropic: {"error": {"message": ...}}; Mistral: {"message": ...} or {"detail": ...}.
+            $message = $decoded['error']['message'] ?? $decoded['message'] ?? $decoded['detail'] ?? null;
+            if (is_string($message) && $message !== '') {
+                return $message;
+            }
+        }
+        if ($curlerror !== '') {
+            return $curlerror;
+        }
+        return \core_text::substr(trim($raw), 0, 300);
     }
 
     protected function clean_base_url(string $url): string {

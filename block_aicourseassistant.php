@@ -73,7 +73,8 @@ class block_aicourseassistant extends block_base {
     }
 
     public function applicable_formats(): array {
-        return ['all' => true, 'mod' => false, 'tag' => false];
+        // Not on the Dashboard: block/aicourseassistant:use is granted through course roles only.
+        return ['all' => true, 'my' => false, 'mod' => false, 'tag' => false];
     }
 
     private function provider_name(): string {

@@ -31,7 +31,9 @@ The block instance filemanager accepts:
 - `.htm`
 - `.pdf`
 
-PDF extraction is intentionally basic because Moodle does not include a full PDF text extractor by default. For best results, attach text, Markdown, CSV, XML, JSON or HTML course documents.
+PDF text is extracted with the bundled [smalot/pdfparser](https://github.com/smalot/pdfparser) (LGPL-3.0, `thirdparty/pdfparser`) and cached per file. Scanned PDFs without a text layer cannot be read.
+
+All documents are placed in the system prompt as plain text, up to 60,000 characters in total. Each document keeps its title and boundaries, and PDF pages are marked so answers can cite them. When the limit is reached the budget is shared between documents and truncated documents are marked as such.
 
 ## Setup
 

@@ -12,11 +12,16 @@ class openai_client extends base_http_client implements llm_client_interface {
             throw new \moodle_exception('missingapikey', 'block_aicourseassistant');
         }
 
+        $model = get_config('block_aicourseassistant', 'openai_model') ?: 'gpt-5-mini';
         $payload = [
-            'model' => get_config('block_aicourseassistant', 'openai_model') ?: 'gpt-5-mini',
+            'model' => $model,
             'input' => $messages,
             'max_output_tokens' => (int)(get_config('block_aicourseassistant', 'maxtokens') ?: 800),
         ];
+        // Reasoning tokens count against max_output_tokens; keep effort low so an answer still fits.
+        if (self::is_reasoning_model($model)) {
+            $payload['reasoning'] = ['effort' => 'low'];
+        }
 
         $baseurl = $this->clean_base_url(get_config('block_aicourseassistant', 'openai_apibaseurl') ?: 'https://api.openai.com/v1');
         $data = $this->request_json($baseurl . '/responses', ['Authorization: Bearer ' . $apikey], $payload);
@@ -31,6 +36,19 @@ class openai_client extends base_http_client implements llm_client_interface {
                 }
             }
         }
-        return trim($text);
+        $text = trim($text);
+        if ($text === '' && ($data['status'] ?? '') === 'incomplete') {
+            throw new \moodle_exception('emptyllmanswer', 'block_aicourseassistant', '', null,
+                'Response incomplete: ' . ($data['incomplete_details']['reason'] ?? 'unknown reason'));
+        }
+        return $text;
+    }
+
+    private static function is_reasoning_model(string $model): bool {
+        $model = strtolower($model);
+        if (strpos($model, '-chat') !== false) {
+            return false;
+        }
+        return (bool)preg_match('/^(gpt-5|o\d)/', $model);
     }
 }

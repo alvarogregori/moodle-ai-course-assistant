@@ -48,7 +48,18 @@ class chat extends \external_api {
 
         $history = self::decode_history($params['history']);
         $messages = self::build_messages($context, $instance->id, $config, $history, $message);
-        $answer = llm_provider_factory::create()->chat($messages);
+        try {
+            $answer = llm_provider_factory::create()->chat($messages);
+        } catch (\moodle_exception $e) {
+            // Site administrators also see the provider's explanation so configuration problems are diagnosable.
+            if (!empty($e->debuginfo) && has_capability('moodle/site:config', \context_system::instance())) {
+                throw new \moodle_exception('providererroradmin', 'block_aicourseassistant', '', (object)[
+                    'message' => $e->getMessage(),
+                    'detail' => clean_param(\core_text::substr($e->debuginfo, 0, 500), PARAM_NOTAGS),
+                ]);
+            }
+            throw $e;
+        }
 
         if ($answer === '') {
             throw new \moodle_exception('emptyllmanswer', 'block_aicourseassistant');
@@ -94,7 +105,9 @@ class chat extends \external_api {
 
         $system = trim($defaultprompt . "\n\n" . $instanceprompt);
         if ($documents !== '') {
-            $system .= "\n\nCourse documentation available to answer student questions:\n" . $documents;
+            $system .= "\n\nCourse documentation available to answer student questions. Each document starts with a"
+                . " '=== Document: ... ===' header and PDF pages are marked '--- Page N ---'; cite the document title"
+                . " and page when you use them:\n\n" . $documents;
         } else {
             $system .= "\n\nNo course documentation has been attached to this block instance. Say that you do not have enough course documentation when the answer depends on missing material.";
         }

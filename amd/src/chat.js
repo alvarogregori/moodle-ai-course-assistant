@@ -1,10 +1,10 @@
 define(['core/ajax', 'core/notification'], function(Ajax, Notification) {
     const histories = {};
 
+    // Quotes must be escaped too: link markdown is later placed inside href="..." attributes.
     const escapeHtml = function(text) {
-        const div = document.createElement('div');
-        div.textContent = text || '';
-        return div.innerHTML;
+        return String(text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     };
 
     const renderMarkdown = function(text) {
